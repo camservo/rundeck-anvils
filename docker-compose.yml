@@ -1,0 +1,40 @@
+version: "3"
+services:
+
+  rundeck:
+    image: jordan/rundeck:3.0.1
+    ports:
+      - "4440:4440"
+    networks:
+      - frontend
+    volumes:
+      - ./projects:/var/rundeck/projects
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
+
+
+## Current rundeck database uses local copy of mysql.  This is in progress
+  # db:
+  #   image: postgres:9.6
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - backend
+  #   environment:
+  #     POSTGRES_DB: rundeck
+  #     POSTGRES_USER: rundeck
+  #     POSTGRES_PASSWORD: rundeck
+  #   # deploy:
+  #   #   placement:
+  #   #     constraints: [node.role == manager]
+
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  projects:
+  db-data:
+
