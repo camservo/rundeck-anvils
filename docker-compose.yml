@@ -1,3 +1,5 @@
+## Currently requires jobs to be loaded manually
+
 version: "3"
 services:
 
@@ -9,6 +11,7 @@ services:
       - frontend
     volumes:
       - ./projects:/var/rundeck/projects
+      - ./db_data:/var/lib/mysql
     # deploy:
     #   restart_policy:
     #     condition: on-failure
