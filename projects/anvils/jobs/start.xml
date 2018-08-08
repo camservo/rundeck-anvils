@@ -1,0 +1,38 @@
+<joblist>   
+   <job> 
+     <name>start</name>  
+     <description>the web start procedure</description>  
+     <loglevel>INFO</loglevel>  
+     <group>web</group>  
+    <context/> 
+    <context> 
+       <options> 
+         <option name="dir" enforcedvalues="false" required="true" 
+                 default="$HOME/anvils" /> 
+       </options> 
+    </context> 
+    <sequence threadcount="1" keepgoing="false" strategy="node-first"> 
+     <command> 
+      <script><![CDATA[#!/bin/bash
+#/ usage: start ?dir?
+set -eu
+[[ $# != 1 ]] && {
+  grep '^#/ usage:' <"$0" | cut -c4- >&2 ; exit 2;
+}
+DIR=$1
+mkdir -p "$DIR"
+echo $$ > "$DIR/pid"
+echo "- Web started (pid=$$)"]]></script>
+     </command> 
+  </sequence>  
+    <nodefilters excludeprecedence="true"> 
+      <include> 
+        <tags>www</tags> 
+      </include> 
+   </nodefilters>  
+   <dispatch> 
+     <threadcount>1</threadcount>  
+     <keepgoing>false</keepgoing> 
+   </dispatch> 
+  </job>
+</joblist>

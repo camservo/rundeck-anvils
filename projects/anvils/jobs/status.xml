@@ -1,0 +1,38 @@
+<joblist> 
+   <job> 
+     <name>status</name>  
+     <description>the web status procedure</description>  
+     <loglevel>INFO</loglevel>  
+     <group>web</group>  
+     <context> 
+       <options> 
+         <option name="dir" enforcedvalues="false" required="true" 
+                 default="$HOME/anvils" /> 
+       </options> 
+     </context>      
+     <sequence threadcount="1" keepgoing="false" strategy="node-first"> 
+     <command> 
+      <script><![CDATA[#!/bin/bash
+#/ usage: status ?dir?
+set -eu
+[[ $# != 1 ]] && {
+  grep '^#/ usage:' <"$0" | cut -c4- >&2 ; exit 2;
+}
+DIR=$1
+[[ ! -f "$DIR/pid" ]] && { echo DOWN; exit 1; }
+PID=$(cat "$DIR/pid")
+[[ -z "$PID" ]] && { echo "DOWN"; exit 1; } || { echo "- RUNNING (pid=$PID)"; }
+]]></script>
+     </command> 
+  </sequence>  
+    <nodefilters excludeprecedence="true"> 
+      <include> 
+        <tags>www</tags> 
+      </include> 
+   </nodefilters>  
+   <dispatch> 
+     <threadcount>1</threadcount>  
+     <keepgoing>false</keepgoing> 
+   </dispatch> 
+  </job>
+</joblist>
