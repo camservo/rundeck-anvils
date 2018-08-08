@@ -1,0 +1,47 @@
+<joblist>   
+    <job> 
+       <name>stop</name>  
+       <description>the web stop procedure</description>  
+       <loglevel>INFO</loglevel>  
+       <group>web</group>  
+       <context> 
+         <options> 
+           <option name="method" enforcedvalues="true"
+                   required="true" 
+               values="normal,force"/> 
+           <option name="dir" enforcedvalues="false" required="true" 
+             default="$HOME/anvils" /> 
+           </options> 
+       </context>  
+       <sequence threadcount="1" keepgoing="false" strategy="node-first"> 
+         <command> 
+           <script><![CDATA[#!/bin/bash
+#/ usage: stop ?dir? ?method?
+set -eu
+[[ $# != 2 ]] && {
+  grep '^#/ usage:' <"$0" | cut -c4- >&2 ; exit 2;
+}
+DIR=$1
+METHOD=$2
+if [[ -f "$DIR/pid" ]]
+then
+        pid=$(cat "$DIR/pid")
+        rm -f "$DIR/pid"; #approximates a kill process
+        exit_code=$?
+        echo "- Web stopped (pid=${pid}) using method: $METHOD"
+fi
+exit ${exit_code:-0}]]></script>  
+            <scriptargs>${option.method}</scriptargs> 
+         </command> 
+       </sequence>  
+       <nodefilters excludeprecedence="true"> 
+         <include> 
+           <tags>www</tags> 
+         </include> 
+       </nodefilters>  
+       <dispatch> 
+         <threadcount>1</threadcount>  
+         <keepgoing>false</keepgoing> 
+       </dispatch> 
+     </job>
+</joblist>
